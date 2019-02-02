@@ -31,7 +31,7 @@ export default Service.extend(Evented, {
       return reject('No settings for init');
     }
 
-    this.fbInitPromise = new Promise(function(resolve){
+    this.fbInitPromise = new Promise((resolve) => {
       window.fbAsyncInit = function() {
         window.FB.init(initSettings);
         run.next(null, resolve);
