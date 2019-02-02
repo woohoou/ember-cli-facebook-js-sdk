@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 import Evented from '@ember/object/evented';
 import Service from '@ember/service';
 import { getOwner } from '@ember/application';
@@ -39,7 +37,7 @@ export default Service.extend(Evented, {
         run.next(null, resolve);
       };
       // URL for the SDK is built according to locale. Defaults to `en_US`.
-      $.getScript(`https://connect.facebook.net/${locale}/sdk.js`, function() {
+      this.getScript(`https://connect.facebook.net/${locale}/sdk.js`, function() {
         // Do nothing here, wait for window.fbAsyncInit to be called.
       });
     }).then(function() {
@@ -132,6 +130,24 @@ export default Service.extend(Evented, {
         });
       });
     });
+  },
+
+  getScript: function (source, callback) {
+    var script = document.createElement('script');
+    var prior = document.getElementsByTagName('script')[0];
+    script.async = 1;
+
+    script.onload = script.onreadystatechange = function( _, isAbort ) {
+        if(isAbort || !script.readyState || /loaded|complete/.test(script.readyState) ) {
+            script.onload = script.onreadystatechange = null;
+            script = undefined;
+
+            if(!isAbort) { if(callback) callback(); }
+        }
+    };
+
+    script.src = source;
+    prior.parentNode.insertBefore(script, prior);
   },
 
   // Facebook Login Methods
